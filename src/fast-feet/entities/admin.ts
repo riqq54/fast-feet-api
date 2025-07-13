@@ -1,11 +1,14 @@
 import { Entity } from "@/core/entities/entity";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { CPF } from "./value-objects/cpf";
+import { Optional } from "@/core/types/optional";
 
 export interface AdminProps{
     name: string
     cpf: CPF
     password: string
+    createdAt: Date
+    updatedAt?: Date | null
 }
 
 export class Admin extends Entity<AdminProps> {
@@ -22,9 +25,20 @@ export class Admin extends Entity<AdminProps> {
         return this.props.password
     }
 
-    static create(props: AdminProps, id?: UniqueEntityID){
+    get createdAt(){
+        return this.props.createdAt
+    }
 
-        const admin = new Admin(props, id)
+    get updatedAt(){
+        return this.props.updatedAt
+    }
+
+    static create(props: Optional<AdminProps, 'createdAt'>, id?: UniqueEntityID){
+
+        const admin = new Admin({
+            ...props,
+            createdAt: props.createdAt ?? new Date(),
+        }, id)
 
         return admin
     }

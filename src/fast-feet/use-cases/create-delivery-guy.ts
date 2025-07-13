@@ -1,10 +1,11 @@
 import { Either, left, right } from "@/core/either"
 import { DeliveryGuy } from "../entities/delivery-guy"
-import { AdminRepository } from "../repositories/admin-repository"
 import { NotAllowedError } from "@/core/errors/not-allowed-error"
-import { DeliveryGuyRepository } from "../repositories/delivery-guy-repository"
 import { DeliveryGuyAlreadyExistsError } from "./errors/delivery-guy-already-exists-error"
 import { HashGenerator } from "../cryptography/hash-generator"
+import { CPF } from "../entities/value-objects/cpf"
+import { DeliveryGuysRepository } from "../repositories/delivery-guys-repository"
+import { AdminsRepository } from "../repositories/admins-repository"
 
 interface CreateDeliveryGuyUseCaseRequest {
     name: string
@@ -19,20 +20,20 @@ type CreateDeliveryGuyUseCaseResponse = Either< NotAllowedError | DeliveryGuyAlr
 export class CreateDeliveryGuyUseCase {
 
     constructor(
-        private adminRepository: AdminRepository,
-        private deliveryGuyRepository: DeliveryGuyRepository,
+        private adminsRepository: AdminsRepository,
+        private deliveryGuysRepository: DeliveryGuysRepository,
         private hashGenerator: HashGenerator
     ) {}
 
     async execute({name, cpf, password, adminId}: CreateDeliveryGuyUseCaseRequest): Promise<CreateDeliveryGuyUseCaseResponse> {
 
-        const isAdmin = await this.adminRepository.findById(adminId)
+        const isAdmin = await this.adminsRepository.findById(adminId)
 
         if(!isAdmin) {
             return left(new NotAllowedError())
         }
 
-        const deliveryGuyWithSameCPF = await this.deliveryGuyRepository.findByCPF(cpf)
+        const deliveryGuyWithSameCPF = await this.deliveryGuysRepository.findByCPF(cpf)
 
         if(deliveryGuyWithSameCPF){
             return left(new DeliveryGuyAlreadyExistsError(cpf))
@@ -42,11 +43,11 @@ export class CreateDeliveryGuyUseCase {
 
         const deliveryGuy = DeliveryGuy.create({
             name,
-            cpf,
+            cpf: CPF.create(cpf),
             password: hashedPassword
         })
 
-        await this.deliveryGuyRepository.create(deliveryGuy)
+        await this.deliveryGuysRepository.create(deliveryGuy)
 
         return right({ deliveryGuy })
     }

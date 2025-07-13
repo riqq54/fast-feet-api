@@ -1,7 +1,7 @@
 import { Admin } from "@/fast-feet/entities/admin";
-import { AdminRepository } from "@/fast-feet/repositories/admin-repository";
+import { AdminsRepository } from "@/fast-feet/repositories/admins-repository";
 
-export class InMemoryAdminRepository implements AdminRepository {
+export class InMemoryAdminsRepository implements AdminsRepository {
     
     public items: Admin[] = []
 
@@ -19,7 +19,7 @@ export class InMemoryAdminRepository implements AdminRepository {
     }
 
     async create(admin: Admin): Promise<void> {
-        throw new Error("Method not implemented.");
+        this.items.push(admin)
     }
 
 }
