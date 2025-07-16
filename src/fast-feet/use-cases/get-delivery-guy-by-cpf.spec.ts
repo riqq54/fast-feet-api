@@ -2,7 +2,10 @@ import { GetDeliveryGuyByCPFUseCase } from "./get-delivery-guy-by-cpf"
 import { makeDeliveryGuy } from "test/factories/make-delivery-guy"
 import { CPF } from "../entities/value-objects/cpf"
 import { InMemoryDeliveryGuysRepository } from "test/repositories/in-memory-delivery-guys-repository copy"
+import { InMemoryAdminsRepository } from "test/repositories/in-memory-admin-repository"
+import { makeAdmin } from "test/factories/make-admin"
 
+let inMemoryAdminsRepository: InMemoryAdminsRepository
 let inMemoryDeliveryGuysRepository: InMemoryDeliveryGuysRepository
 
 let sut: GetDeliveryGuyByCPFUseCase
@@ -11,11 +14,15 @@ describe('Get Delivery Guy by CPF', () => {
     beforeEach(() => {
 
         inMemoryDeliveryGuysRepository = new InMemoryDeliveryGuysRepository()
-        
-        sut = new GetDeliveryGuyByCPFUseCase(inMemoryDeliveryGuysRepository)
+        inMemoryAdminsRepository = new InMemoryAdminsRepository()
+
+        sut = new GetDeliveryGuyByCPFUseCase(inMemoryDeliveryGuysRepository, inMemoryAdminsRepository)
     })
 
     it('should be possible to get a delivery guy by CPF', async () => {
+
+        const admin = makeAdmin()
+        await inMemoryAdminsRepository.create(admin)
 
         const deliveryGuy = makeDeliveryGuy({
             name: 'John Doe',
@@ -24,7 +31,8 @@ describe('Get Delivery Guy by CPF', () => {
         await inMemoryDeliveryGuysRepository.create(deliveryGuy)
 
         const result = await sut.execute({
-            cpf: '123.456.789-10'
+            cpf: '123.456.789-10',
+            adminId: admin.id.toString()
         })
 
         expect(result.isRight()).toBe(true)

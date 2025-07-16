@@ -1,19 +1,31 @@
-import { Either, right } from "@/core/either"
+import { Either, left, right } from "@/core/either"
 import { DeliveryGuy } from "../entities/delivery-guy"
 import { DeliveryGuysRepository } from "../repositories/delivery-guys-repository"
+import { AdminsRepository } from "../repositories/admins-repository"
+import { NotAllowedError } from "@/core/errors/not-allowed-error"
 
 interface FetchDeliveryGuysUseCaseRequest {
+    adminId: string
     page: number
 }
 
-type FetchDeliveryGuysUseCaseResponse = Either<null, {
+type FetchDeliveryGuysUseCaseResponse = Either<NotAllowedError, {
     deliveryGuys: DeliveryGuy[]
 }>
 
 export class FetchDeliveryGuysUseCase {
-    constructor(private deliveryGuysRepository: DeliveryGuysRepository) {}
+    constructor(
+        private deliveryGuysRepository: DeliveryGuysRepository,
+        private adminsRepository: AdminsRepository
+    ) {}
 
-    async execute({ page }:FetchDeliveryGuysUseCaseRequest):Promise<FetchDeliveryGuysUseCaseResponse> {
+    async execute({ adminId, page }:FetchDeliveryGuysUseCaseRequest):Promise<FetchDeliveryGuysUseCaseResponse> {
+
+        const isAdmin = await this.adminsRepository.findById(adminId)
+                
+        if(!isAdmin) {
+            return left(new NotAllowedError())
+        }
         
         const deliveryGuys = await this.deliveryGuysRepository.findMany({ page })
 
