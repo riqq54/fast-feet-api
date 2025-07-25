@@ -1,46 +1,46 @@
 import { InMemoryAdminsRepository } from "test/repositories/in-memory-admin-repository"
-import { InMemoryDeliveryGuysRepository } from "test/repositories/in-memory-delivery-guys-repository"
-import { EditDeliveryGuyUseCase } from "./edit-delivery-guy"
-import { makeDeliveryGuy } from "test/factories/make-delivery-guy"
 import { CPF } from "../entities/value-objects/cpf"
 import { makeAdmin } from "test/factories/make-admin"
 import { NotAllowedError } from "@/core/errors/not-allowed-error"
+import { InMemoryReceiversRepository } from "test/repositories/in-memory-receivers-repository"
+import { EditReceiverUseCase } from "./edit-receiver"
+import { makeReceiver } from "test/factories/make-receiver"
 
 let inMemoryAdminsRepository: InMemoryAdminsRepository
-let inMemoryDeliveryGuysRepository: InMemoryDeliveryGuysRepository
+let inMemoryReceiversRepository: InMemoryReceiversRepository
 
-let sut: EditDeliveryGuyUseCase
+let sut: EditReceiverUseCase
 
-describe('Edit Delivery Guy', () => {
+describe('Edit Receiver', () => {
 
     beforeEach(() => {
 
-        inMemoryDeliveryGuysRepository = new InMemoryDeliveryGuysRepository()
+        inMemoryReceiversRepository = new InMemoryReceiversRepository()
         inMemoryAdminsRepository = new InMemoryAdminsRepository()
 
-        sut = new EditDeliveryGuyUseCase(inMemoryDeliveryGuysRepository, inMemoryAdminsRepository)
+        sut = new EditReceiverUseCase(inMemoryReceiversRepository, inMemoryAdminsRepository)
     })
 
-    it('should be possible to edit Delivery Guy information', async () => {
-        const deliveryGuy = makeDeliveryGuy({
+    it('should be possible to edit Receiver information', async () => {
+        const receiver = makeReceiver({
             name: 'John Doe',
             cpf: CPF.create('111.111.111.11')
         })
-        await inMemoryDeliveryGuysRepository.create(deliveryGuy)
+        await inMemoryReceiversRepository.create(receiver)
 
         const admin = makeAdmin()
         await inMemoryAdminsRepository.create(admin)
 
         const result = await sut.execute({
             adminId: admin.id.toString(),
-            deliveryGuyId: deliveryGuy.id.toString(),
+            receiverId: receiver.id.toString(),
             cpf: '123.456.789-10',
             name: 'John Doe Edited'
         })
 
         expect(result.isRight()).toBe(true)
         expect(result.value).toMatchObject({
-            deliveryGuy: expect.objectContaining({
+            receiver: expect.objectContaining({
                 name: 'John Doe Edited',
                 cpf: expect.objectContaining({
                     value: '123.456.789-10',
@@ -49,19 +49,19 @@ describe('Edit Delivery Guy', () => {
         })
     })
 
-    it('should not be possible for a non-admin user to edit a Delivery Guy information', async ()=> {
-        const deliveryGuy = makeDeliveryGuy({
+    it('should not be possible for a non-admin user to edit a Receiver information', async ()=> {
+        const receiver = makeReceiver({
             name: 'John Doe',
             cpf: CPF.create('111.111.111.11')
         })
-        await inMemoryDeliveryGuysRepository.create(deliveryGuy)
+        await inMemoryReceiversRepository.create(receiver)
 
-        const nonAdmin = makeDeliveryGuy()
-        await inMemoryDeliveryGuysRepository.create(nonAdmin)
+        const nonAdmin = makeReceiver()
+        await inMemoryReceiversRepository.create(nonAdmin)
 
         const result = await sut.execute({
             adminId: nonAdmin.id.toString(),
-            deliveryGuyId: deliveryGuy.id.toString(),
+            receiverId: receiver.id.toString(),
             cpf: '123.456.789-10',
             name: 'John Doe Edited'
         })

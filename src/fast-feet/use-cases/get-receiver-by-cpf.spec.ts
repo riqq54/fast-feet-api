@@ -1,34 +1,34 @@
-import { GetDeliveryGuyByCPFUseCase } from "./get-delivery-guy-by-cpf"
-import { makeDeliveryGuy } from "test/factories/make-delivery-guy"
 import { CPF } from "../entities/value-objects/cpf"
-import { InMemoryDeliveryGuysRepository } from "test/repositories/in-memory-delivery-guys-repository"
 import { InMemoryAdminsRepository } from "test/repositories/in-memory-admin-repository"
 import { makeAdmin } from "test/factories/make-admin"
+import { InMemoryReceiversRepository } from "test/repositories/in-memory-receivers-repository"
+import { GetReceiverByCPFUseCase } from "./get-receiver-by-cpf"
+import { makeReceiver } from "test/factories/make-receiver"
 
 let inMemoryAdminsRepository: InMemoryAdminsRepository
-let inMemoryDeliveryGuysRepository: InMemoryDeliveryGuysRepository
+let inMemoryReceiversRepository: InMemoryReceiversRepository
 
-let sut: GetDeliveryGuyByCPFUseCase
+let sut: GetReceiverByCPFUseCase
 
-describe('Get Delivery Guy by CPF', () => {
+describe('Get Receiver by CPF', () => {
     beforeEach(() => {
 
-        inMemoryDeliveryGuysRepository = new InMemoryDeliveryGuysRepository()
+        inMemoryReceiversRepository = new InMemoryReceiversRepository()
         inMemoryAdminsRepository = new InMemoryAdminsRepository()
 
-        sut = new GetDeliveryGuyByCPFUseCase(inMemoryDeliveryGuysRepository, inMemoryAdminsRepository)
+        sut = new GetReceiverByCPFUseCase(inMemoryReceiversRepository, inMemoryAdminsRepository)
     })
 
-    it('should be possible to get a delivery guy by CPF', async () => {
+    it('should be possible to get a receiver by CPF', async () => {
 
         const admin = makeAdmin()
         await inMemoryAdminsRepository.create(admin)
 
-        const deliveryGuy = makeDeliveryGuy({
+        const receiver = makeReceiver({
             name: 'John Doe',
             cpf: CPF.create('123.456.789-10')
         })
-        await inMemoryDeliveryGuysRepository.create(deliveryGuy)
+        await inMemoryReceiversRepository.create(receiver)
 
         const result = await sut.execute({
             cpf: '123.456.789-10',
@@ -37,7 +37,7 @@ describe('Get Delivery Guy by CPF', () => {
 
         expect(result.isRight()).toBe(true)
         expect(result.value).toMatchObject({
-            deliveryGuy: expect.objectContaining({
+            receiver: expect.objectContaining({
                 name: 'John Doe'
             })
         })

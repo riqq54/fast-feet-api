@@ -1,40 +1,40 @@
-import { CreateDeliveryGuyUseCase } from "./create-delivery-guy"
 import { FakeHasher } from "test/cryptography/fake-hasher"
 import { makeAdmin } from "test/factories/make-admin"
-import { makeDeliveryGuy } from "test/factories/make-delivery-guy"
 import { CPF } from "../entities/value-objects/cpf"
 import { InMemoryAdminsRepository } from "test/repositories/in-memory-admin-repository"
-import { InMemoryDeliveryGuysRepository } from "test/repositories/in-memory-delivery-guys-repository"
 import { NotAllowedError } from "@/core/errors/not-allowed-error"
-import { DeliveryGuyAlreadyExistsError } from "./errors/delivery-guy-already-exists-error"
+import { InMemoryReceiversRepository } from "test/repositories/in-memory-receivers-repository"
+import { CreateReceiverUseCase } from "./create-receiver"
+import { makeReceiver } from "test/factories/make-receiver"
+import { ReceiverAlreadyExistsError } from "./errors/receiver-already-exists-error"
 
 let inMemoryAdminsRepository: InMemoryAdminsRepository
-let inMemoryDeliveryGuysRepository: InMemoryDeliveryGuysRepository
+let inMemoryReceiversRepository: InMemoryReceiversRepository
 let fakeHasher: FakeHasher
 
-let sut: CreateDeliveryGuyUseCase
+let sut: CreateReceiverUseCase
 
-describe('Create Delivery Guy', () => {
+describe('Create Receiver', () => {
     beforeEach(() => {
 
         inMemoryAdminsRepository = new InMemoryAdminsRepository()
-        inMemoryDeliveryGuysRepository = new InMemoryDeliveryGuysRepository()
+        inMemoryReceiversRepository = new InMemoryReceiversRepository()
         fakeHasher = new FakeHasher()
     
-        sut = new CreateDeliveryGuyUseCase(
+        sut = new CreateReceiverUseCase(
             inMemoryAdminsRepository,
-            inMemoryDeliveryGuysRepository,
+            inMemoryReceiversRepository,
             fakeHasher
         )
     })
 
-    it('should be able to create a Delivery Guy', async () => {
+    it('should be able to create a Receiver', async () => {
 
         const adminUser = makeAdmin()
         inMemoryAdminsRepository.items.push(adminUser)
 
         const result = await sut.execute({
-            name: 'Delivery Guy',
+            name: 'Receiver',
             cpf: '123.456.789-10',
             password: '123456',
             adminId: adminUser.id.toString()
@@ -42,17 +42,17 @@ describe('Create Delivery Guy', () => {
 
         expect(result.isRight()).toBe(true)
         expect(result.value).toEqual({
-            deliveryGuy: inMemoryDeliveryGuysRepository.items[0]
+            receiver: inMemoryReceiversRepository.items[0]
         })
     })
 
-    it('should hash Delivery Guy password upon creation', async () => {
+    it('should hash Receiver password upon creation', async () => {
 
         const adminUser = makeAdmin()
         inMemoryAdminsRepository.items.push(adminUser)
 
         const result = await sut.execute({
-            name: 'Delivery Guy',
+            name: 'Receiver',
             cpf: '123.456.789-10',
             password: '123456',
             adminId: adminUser.id.toString()
@@ -61,18 +61,18 @@ describe('Create Delivery Guy', () => {
         const hashedPassword = await fakeHasher.hash('123456')
 
         expect(result.isRight()).toBe(true)
-        expect(inMemoryDeliveryGuysRepository.items[0].password).toEqual(hashedPassword)
+        expect(inMemoryReceiversRepository.items[0].password).toEqual(hashedPassword)
     })
 
-    it('should not be possible for a non-admin user to create a Delivery Guy', async () => {
+    it('should not be possible for a non-admin user to create a Receiver', async () => {
         
-        const nonAdminUser = makeDeliveryGuy({
+        const nonAdminUser = makeReceiver({
             name: 'Non-admin user'
         })
-        inMemoryDeliveryGuysRepository.items.push(nonAdminUser)
+        inMemoryReceiversRepository.items.push(nonAdminUser)
         
         const result = await sut.execute({
-            name: 'Delivery Guy',
+            name: 'Receiver',
             cpf: '123.456.789-10',
             password: '123456',
             adminId: nonAdminUser.id.toString()
@@ -82,24 +82,24 @@ describe('Create Delivery Guy', () => {
         expect(result.value).toBeInstanceOf(NotAllowedError)
     })
 
-    it('should not be possible to create two Delivery Guys with the same CPF', async () => {
+    it('should not be possible to create two Receivers with the same CPF', async () => {
 
-        const deliveryGuy = makeDeliveryGuy({
+        const receiver = makeReceiver({
             cpf: CPF.create('123.456.789-10')
         })
-        inMemoryDeliveryGuysRepository.items.push(deliveryGuy)
+        inMemoryReceiversRepository.items.push(receiver)
 
         const adminUser = makeAdmin()
         inMemoryAdminsRepository.items.push(adminUser)
 
         const result = await sut.execute({
-            name: 'Delivery Guy',
+            name: 'Receiver',
             cpf: '123.456.789-10',
             password: '123456',
             adminId: adminUser.id.toString()
         })
 
         expect(result.isLeft()).toBe(true)
-        expect(result.value).toBeInstanceOf(DeliveryGuyAlreadyExistsError)
+        expect(result.value).toBeInstanceOf(ReceiverAlreadyExistsError)
     })
 })

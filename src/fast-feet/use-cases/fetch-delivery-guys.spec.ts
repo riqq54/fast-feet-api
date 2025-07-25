@@ -1,4 +1,4 @@
-import { InMemoryDeliveryGuysRepository } from "test/repositories/in-memory-delivery-guys-repository copy"
+import { InMemoryDeliveryGuysRepository } from "test/repositories/in-memory-delivery-guys-repository"
 import { FetchDeliveryGuysUseCase } from "./fetch-delivery-guys"
 import { makeDeliveryGuy } from "test/factories/make-delivery-guy"
 import { InMemoryAdminsRepository } from "test/repositories/in-memory-admin-repository"

@@ -1,5 +1,5 @@
 import { InMemoryAdminsRepository } from "test/repositories/in-memory-admin-repository"
-import { InMemoryDeliveryGuysRepository } from "test/repositories/in-memory-delivery-guys-repository copy"
+import { InMemoryDeliveryGuysRepository } from "test/repositories/in-memory-delivery-guys-repository"
 import { DeleteDeliveryGuyUseCase } from "./delete-delivery-guy"
 import { makeDeliveryGuy } from "test/factories/make-delivery-guy"
 import { makeAdmin } from "test/factories/make-admin"
