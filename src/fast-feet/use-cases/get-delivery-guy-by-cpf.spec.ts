@@ -2,7 +2,7 @@ import { GetDeliveryGuyByCPFUseCase } from "./get-delivery-guy-by-cpf"
 import { makeDeliveryGuy } from "test/factories/make-delivery-guy"
 import { CPF } from "../entities/value-objects/cpf"
 import { InMemoryDeliveryGuysRepository } from "test/repositories/in-memory-delivery-guys-repository"
-import { InMemoryAdminsRepository } from "test/repositories/in-memory-admin-repository"
+import { InMemoryAdminsRepository } from "test/repositories/in-memory-admins-repository"
 import { makeAdmin } from "test/factories/make-admin"
 
 let inMemoryAdminsRepository: InMemoryAdminsRepository

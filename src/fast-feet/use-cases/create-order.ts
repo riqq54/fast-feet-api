@@ -6,6 +6,7 @@ import { Order } from "../entities/order"
 import { ResourceNotFoundError } from "@/core/errors/resource-not-found-error"
 import { UniqueEntityID } from "@/core/entities/unique-entity-id"
 import { ReceiversRepository } from "../repositories/receivers-repository"
+import { OrdersRepository } from "../repositories/orders-repository"
 
 interface CreateOrderUseCaseRequest {
     receiverId: string
@@ -25,6 +26,7 @@ export class CreateOrderUseCase {
         private adminsRepository: AdminsRepository,
         private deliveryGuysRepository: DeliveryGuysRepository,
         private receiversRepository: ReceiversRepository,
+        private ordersRepository: OrdersRepository
     ) {}
 
     async execute({receiverId, deliveryGuyId, deliveryCoordinates, adminId}: CreateOrderUseCaseRequest): Promise<CreateOrderUseCaseResponse> {
@@ -52,6 +54,8 @@ export class CreateOrderUseCase {
             receiverId: new UniqueEntityID(receiverId),
             deliveryCoordinates,
         })
+
+        this.ordersRepository.create(order)
 
         return right({ order })
     }

@@ -1,7 +1,7 @@
 import { InMemoryDeliveryGuysRepository } from "test/repositories/in-memory-delivery-guys-repository"
 import { FetchDeliveryGuysUseCase } from "./fetch-delivery-guys"
 import { makeDeliveryGuy } from "test/factories/make-delivery-guy"
-import { InMemoryAdminsRepository } from "test/repositories/in-memory-admin-repository"
+import { InMemoryAdminsRepository } from "test/repositories/in-memory-admins-repository"
 import { makeAdmin } from "test/factories/make-admin"
 import { NotAllowedError } from "@/core/errors/not-allowed-error"
 

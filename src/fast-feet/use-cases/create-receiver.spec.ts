@@ -1,7 +1,7 @@
 import { FakeHasher } from "test/cryptography/fake-hasher"
 import { makeAdmin } from "test/factories/make-admin"
 import { CPF } from "../entities/value-objects/cpf"
-import { InMemoryAdminsRepository } from "test/repositories/in-memory-admin-repository"
+import { InMemoryAdminsRepository } from "test/repositories/in-memory-admins-repository"
 import { NotAllowedError } from "@/core/errors/not-allowed-error"
 import { InMemoryReceiversRepository } from "test/repositories/in-memory-receivers-repository"
 import { CreateReceiverUseCase } from "./create-receiver"

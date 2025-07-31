@@ -1,4 +1,4 @@
-import { InMemoryAdminsRepository } from "test/repositories/in-memory-admin-repository"
+import { InMemoryAdminsRepository } from "test/repositories/in-memory-admins-repository"
 import { makeAdmin } from "test/factories/make-admin"
 import { InMemoryReceiversRepository } from "test/repositories/in-memory-receivers-repository"
 import { DeleteReceiverUseCase } from "./delete-receiver"

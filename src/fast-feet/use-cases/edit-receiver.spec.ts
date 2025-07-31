@@ -1,4 +1,4 @@
-import { InMemoryAdminsRepository } from "test/repositories/in-memory-admin-repository"
+import { InMemoryAdminsRepository } from "test/repositories/in-memory-admins-repository"
 import { CPF } from "../entities/value-objects/cpf"
 import { makeAdmin } from "test/factories/make-admin"
 import { NotAllowedError } from "@/core/errors/not-allowed-error"
